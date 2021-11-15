@@ -17,13 +17,15 @@ usermod -aG sudo <example_user>
 
 ### Windows Setup
 
-Open a new admin PowerShell window and run the following command to setup [WinRM](https://docs.microsoft.com/en-us/windows/win32/winrm/portal) on the host machine:
-```ps
-iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1'))
-```
-
-On the ansible server, install pywinrm..
+On the ansible server, install pywinrm and generate the certs.
 ```shell
 sudo apt install python3-pip # Install pip if missing
 pip install pywinrm
+curl https://raw.githubusercontent.com/ksmarty/homelab-playbooks/main/scripts/generate_winrm.sh | bash
+```
+
+On the Windows host, open a new admin PowerShell window and run the following command to copy the certificate and setup [WinRM](https://docs.microsoft.com/en-us/windows/win32/winrm/portal):
+```ps
+scp <user>@<ansible server>:~/.ssh/winrm.pem "$HOME\Downloads"
+iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/ksmarty/homelab-playbooks/main/scripts/setup_certs.ps1'))
 ```
