@@ -1,5 +1,5 @@
 # Set the name of the local user that will have the key mapped to
-USERNAME="kyles"
+read -p 'Windows username: ' USERNAME
 
 cat > openssl.conf << EOL
 distinguished_name = req_distinguished_name
