@@ -2,7 +2,8 @@
 iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1'))
 
 # Get params
-param($username = $(Read-Host "Input username"), $pass = $(Read-Host "Input password"))
+$username = Read-Host "Input username"
+$pass = Read-Host "Input password"
 
 # Import Issuing Certificate
 
