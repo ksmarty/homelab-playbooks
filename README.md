@@ -29,3 +29,15 @@ On the Windows host, open a new admin PowerShell window and run the following co
 scp [user]@[ansible server]:~/.ssh/winrm.pem "$HOME\Downloads"
 iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/ksmarty/homelab-playbooks/main/scripts/setup_certs.ps1'))
 ```
+
+## Setup
+
+### Windows
+
+If Bluetooth isn't working, follow the steps found [here](https://www.reddit.com/r/ASUS/comments/he7ci7/comment/g1przej/?utm_source=share&utm_medium=web2x&context=3).
+
+> 1. Turn off the PC.
+> 2. Unplug power cable to PSU.
+> 3. Hold power button for 30 seconds.
+> 4. Plug power back into PSU.
+> 5. Boot PC.
