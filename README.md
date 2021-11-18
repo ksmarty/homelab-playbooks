@@ -21,12 +21,12 @@ On the ansible server, install pywinrm and generate the certs.
 ```shell
 sudo apt install python3-pip # Install pip if missing
 pip install pywinrm
-curl https://raw.githubusercontent.com/ksmarty/homelab-playbooks/main/scripts/generate_winrm.sh | bash
+curl https://gitcdn.link/cdn/ksmarty/homelab-playbooks/main/scripts/generate_winrm.sh | bash
 ```
 
 On the Windows host, open a new admin PowerShell window and run the following command to copy the certificate and setup [WinRM](https://docs.microsoft.com/en-us/windows/win32/winrm/portal):
 ```ps
-iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/ksmarty/homelab-playbooks/main/scripts/setup_certs.ps1'))
+iwr -useb https://gitcdn.link/cdn/ksmarty/homelab-playbooks/main/scripts/setup_certs.ps1|iex
 ```
 
 ## Setup
