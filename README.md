@@ -26,7 +26,6 @@ curl https://raw.githubusercontent.com/ksmarty/homelab-playbooks/main/scripts/ge
 
 On the Windows host, open a new admin PowerShell window and run the following command to copy the certificate and setup [WinRM](https://docs.microsoft.com/en-us/windows/win32/winrm/portal):
 ```ps
-scp [user]@[ansible server]:~/.ssh/winrm.pem "$HOME\Downloads"
 iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/ksmarty/homelab-playbooks/main/scripts/setup_certs.ps1'))
 ```
 
