@@ -1,9 +1,9 @@
 # Download cert
-$server_user = Read-Host "Input Ansible server username"
-$server_ip = Read-Host "Input Ansible server IP"
 if (-not (Test-Path "$HOME\Downloads\tmp" -PathType Container)) {
     md "$HOME\Downloads\tmp"
 }
+$server_user = Read-Host "Input Ansible server username"
+$server_ip = Read-Host "Input Ansible server IP"
 scp $server_user@${server_ip}:~/.ssh/winrm.pem "$HOME\Downloads\tmp"
 
 # Setup WinRM
