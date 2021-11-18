@@ -1,3 +1,9 @@
+# Download cert
+$server_user = Read-Host "Input Ansible server username"
+$server_ip = Read-Host "Input Ansible server IP"
+md "$HOME\Downloads\tmp"
+scp $server_user@$server_ip:~/.ssh/winrm.pem "$HOME\Downloads\tmp"
+
 # Setup WinRM
 iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1'))
 
