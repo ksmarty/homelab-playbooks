@@ -7,7 +7,7 @@ $server_ip = Read-Host "Input Ansible server IP"
 scp $server_user@${server_ip}:~/.ssh/winrm.pem "$HOME\Downloads\tmp"
 
 # Setup WinRM
-iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1'))
+iwr -useb https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1|iex
 
 # Get params
 $username = Read-Host "Input username"
