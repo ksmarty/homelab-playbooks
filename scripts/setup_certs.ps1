@@ -16,7 +16,7 @@ $pass = Read-Host "Input password"
 # Import Issuing Certificate
 
 $cert = New-Object -TypeName System.Security.Cryptography.X509Certificates.X509Certificate2
-$cert.Import("$HOME\Downloads\winrm.pem")
+$cert.Import("$HOME\Downloads\tmp\winrm.pem")
 
 $store_name = [System.Security.Cryptography.X509Certificates.StoreName]::Root
 $store_location = [System.Security.Cryptography.X509Certificates.StoreLocation]::LocalMachine
@@ -28,7 +28,7 @@ $store.Close()
 # Import Client Certificate Public Key
 
 $cert = New-Object -TypeName System.Security.Cryptography.X509Certificates.X509Certificate2
-$cert.Import("$HOME\Downloads\winrm.pem")
+$cert.Import("$HOME\Downloads\tmp\winrm.pem")
 
 $store_name = [System.Security.Cryptography.X509Certificates.StoreName]::TrustedPeople
 $store_location = [System.Security.Cryptography.X509Certificates.StoreLocation]::LocalMachine
