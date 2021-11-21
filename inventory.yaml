@@ -1,0 +1,9 @@
+---
+windows:
+    hosts:
+        192.168.1.91:
+    vars:
+        ansible_winrm_cert_pem: /home/user/.ssh/winrm.pem
+        ansible_winrm_cert_key_pem: /home/user/.ssh/winrm_key.pem
+        ansible_connection: winrm
+        ansible_winrm_server_cert_validation: ignore

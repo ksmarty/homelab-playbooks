@@ -1,0 +1,181 @@
+---
+- hosts: windows
+  tasks:
+      - name: Update Windows
+        ansible.windows.win_updates:
+            category_names: "*"
+            reboot: yes
+
+      - name: Fix Windows Explorer
+        ansible.windows.win_regedit:
+            path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer{{ item.path if item.path is defined else "" }}'
+            name: "{{ item.name }}"
+            data: "{{ item.data }}"
+            type: dword
+        loop:
+            - path: '\Advanced'
+              name: "Hidden"
+              data: "1"
+            - path: '\Advanced'
+              name: "HideFileExt"
+              data: "0"
+            - name: "ShowRecent"
+              data: "0"
+            - name: "ShowFrequent"
+              data: "0"
+            - path: '\Ribbon'
+              name: "MinimizedStateTabletModeOff"
+              data: "0"
+      - name: Restart Windows Explorer
+        ansible.windows.win_powershell:
+            script: "Stop-Process -processname explorer"
+
+      - name: Download winactivate
+        ansible.windows.win_get_url:
+            url: https://github.com/luzeadev/winactivate/archive/refs/heads/main.zip
+            dest: '%TEMP%\winactivate.zip'
+      - name: Extract windactivate
+        community.windows.win_unzip:
+            src: '%TEMP%\winactivate.zip'
+            dest: "%TEMP%"
+            delete_archive: yes
+      - name: Activate Windows
+        ansible.windows.win_command: "winactivate.cmd /headless"
+        args:
+            chdir: '%TEMP%\winactivate-main'
+
+      - name: Debloat Windows
+        win_shell: "iwr -useb https://gitcdn.link/cdn/Sycnex/Windows10Debloater/master/Windows10SysPrepDebloater.ps1|iex"
+
+- hosts: windows
+  tasks:
+      - name: Install Chocolatey
+        chocolatey.chocolatey.win_chocolatey:
+            name:
+                - chocolatey
+                - chocolatey-core.extension
+            state: latest
+      - name: Install coding packages
+        chocolatey.chocolatey.win_chocolatey:
+            name:
+                - etcher
+                - git
+                - nodejs
+                - python
+                - tabby
+                - vscodium
+            state: present
+      - name: Install gaming packages
+        chocolatey.chocolatey.win_chocolatey:
+            name:
+                - epicgameslauncher
+                - goggalaxy
+                - origin
+                - steam-client
+            state: present
+      - name: Install misc packages
+        chocolatey.chocolatey.win_chocolatey:
+            name:
+                - 7zip
+                - adoptopenjdk
+                - amd-ryzen-chipset
+                - audacity
+                - audacity-ffmpeg
+                - audacity-lame
+                - cura-new
+                - deluge
+                - discord
+                - eartrumpet
+                - equalizerapo
+                - evga-precision-x1
+                - firefox
+                - geforce-game-ready-driver
+                - handbrake
+                - intel-proset-drivers
+                - libreoffice-fresh
+                - modernflyouts
+                - obs-studio
+                - openhardwaremonitor
+                - powertoys
+                - realtek-hd-audio-driver
+                - signal
+                - soundswitch
+                - teamviewer
+                - tor-browser
+                - vcredist-all
+                - virtualbox
+                - vlc
+            state: present
+
+      - name: Install Hamachi
+        ansible.windows.win_package:
+            path: https://secure.logmein.com/hamachi.msi
+            product_id: "{ECC0FA07-863E-44BC-8B1D-DA22F96E5FB7}"
+            state: present
+
+      - name: Download GDLauncher
+        ansible.windows.win_powershell:
+            script: |
+                curl https://github.com/gorilla-devs/GDLauncher/releases/latest/download/GDLauncher-win-setup.exe -o GDLauncher-win-setup.exe
+            chdir: "{{ ansible_env.TEMP }}"
+      - name: Install GDLauncher
+        ansible.windows.win_package:
+            path: '{{ ansible_env.TEMP }}\GDLauncher-win-setup.exe'
+            state: present
+
+      - name: Get ksnip Version
+        local_action:
+            module: ansible.builtin.shell
+            cmd: |
+                curl -s "https://api.github.com/repos/ksnip/ksnip/releases/latest" | grep -Po '"tag_name": "[A-Za-z]\K.*?(?=")'
+        register: ksnip_ver
+      - name: Install ksnip
+        ansible.windows.win_package:
+            path: "https://github.com/ksnip/ksnip/releases/download/v{{ ksnip_ver.stdout }}/ksnip-{{ ksnip_ver.stdout }}.msi"
+            state: present
+
+- hosts: windows
+  name: Restore Configs
+  tasks:
+      - name: EqualizerAPO Config
+        ansible.windows.win_copy:
+            dest: '%PROGRAMFILES%\EqualizerAPO\config\{{ item.dest }}'
+            content: "{{ item.content }}"
+        loop:
+            - dest: "config.txt"
+              content: "Include: swapchannels.txt"
+            - dest: "swapchannels.txt"
+              content: "Copy: L=R R=L"
+
+- hosts: windows
+  name: Install T-Rex
+  tasks:
+      - name: Get T-Rex Version
+        local_action:
+            module: ansible.builtin.shell
+            cmd: |
+                curl -s "https://api.github.com/repos/trexminer/T-Rex/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'
+        register: trex_ver
+      - name: Download T-Rex
+        ansible.windows.win_get_url:
+            url: "https://github.com/trexminer/T-Rex/releases/download/{{ trex_ver.stdout }}/t-rex-{{ trex_ver.stdout }}-win.zip"
+            dest: '%TEMP%\t-rex.zip'
+      - name: Extract T-Rex
+        community.windows.win_unzip:
+            src: '%TEMP%\t-rex.zip'
+            dest: '%TEMP%\t-rex'
+            delete_archive: yes
+      - name: Copy T-Rex to Program Files
+        ansible.windows.win_copy:
+            remote_src: yes
+            src: '%TEMP%\t-rex\t-rex.exe'
+            dest: '%PROGRAMFILES(X86)%\T-Rex\'
+      - name: Download Config & Link
+        ansible.windows.win_get_url:
+            url: "https://gitcdn.link/cdn/ksmarty/homelab-playbooks/main/configs/{{ item.url }}"
+            dest: '{{ item.dest }}\{{ item.url }}'
+        loop:
+            - url: "T-Rex.bat"
+              dest: '%PROGRAMFILES(X86)%\T-Rex'
+            - url: "T-Rex.lnk"
+              dest: '%APPDATA%\Microsoft\Windows\Start Menu\Programs'
