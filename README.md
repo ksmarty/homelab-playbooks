@@ -3,12 +3,17 @@ Ansible playbooks for my homelab
 
 ## Prerequisites
 
+Install git on the Ansible controller and clone this repo.
+
+```sh
+sudo apt install git
+git clone https://github.com/ksmarty/homelab-playbooks.git
+cd homelab-playbooks
+```
+
 ### Linux Setup
 
-Allow SSH access for root or enable sudo for another user:
-```sh
-sed -ri 's/#?(PermitRootLogin).*/\1 yes/' /etc/ssh/sshd_config && service ssh restart
-```
+Enable sudo for another user:
 
 ```sh
 usermod -aG sudo <example_user>
@@ -17,8 +22,8 @@ usermod -aG sudo <example_user>
 
 ### Windows Setup
 
-On the ansible server, install pywinrm and generate the certs.
-```shell
+On the Ansible controller, install pywinrm and generate the certs.
+```sh
 sudo apt install python3-pip # Install pip if missing
 pip install pywinrm
 curl https://gitcdn.link/cdn/ksmarty/homelab-playbooks/main/scripts/generate_winrm.sh | bash
@@ -30,6 +35,12 @@ iwr -useb https://gitcdn.link/cdn/ksmarty/homelab-playbooks/main/scripts/setup_c
 ```
 
 ## Setup
+
+Run the desired playbook.
+
+```sh
+ansible-playbook playbooks/<name>.yaml
+```
 
 ### Windows
 

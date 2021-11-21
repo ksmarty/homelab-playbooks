@@ -123,17 +123,6 @@
             path: '{{ ansible_env.TEMP }}\GDLauncher-win-setup.exe'
             state: present
 
-      - name: Get ksnip Version
-        local_action:
-            module: ansible.builtin.shell
-            cmd: |
-                curl -s "https://api.github.com/repos/ksnip/ksnip/releases/latest" | grep -Po '"tag_name": "[A-Za-z]\K.*?(?=")'
-        register: ksnip_ver
-      - name: Install ksnip
-        ansible.windows.win_package:
-            path: "https://github.com/ksnip/ksnip/releases/download/v{{ ksnip_ver.stdout }}/ksnip-{{ ksnip_ver.stdout }}.msi"
-            state: present
-
 - hosts: windows
   name: Restore Configs
   tasks:
