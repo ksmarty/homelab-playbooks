@@ -26,7 +26,7 @@ On the Ansible controller, install pywinrm and generate the certs.
 ```sh
 sudo apt install python3-pip # Install pip if missing
 pip install pywinrm
-curl https://gitcdn.link/cdn/ksmarty/homelab-playbooks/main/scripts/generate_winrm.sh | bash
+./scripts/generate_winrm.sh
 ```
 
 On the Windows host, open a new admin PowerShell window and run the following command to copy the certificate and setup [WinRM](https://docs.microsoft.com/en-us/windows/win32/winrm/portal):

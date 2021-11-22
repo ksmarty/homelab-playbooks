@@ -136,6 +136,22 @@
             - dest: "swapchannels.txt"
               content: "Copy: L=R R=L"
 
+      - name: Download Wallpaper
+        ansible.windows.win_get_url:
+            url: https://unsplash.com/photos/JgOeRuGD_Y4/download?ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjM3NTM5OTEy&force=true
+            dest: '%USERPROFILE%\Pictures\Saved Pictures\john-towner-JgOeRuGD_Y4-unsplash.jpg'
+      - name: Apply Wallpaper in Registry
+        ansible.windows.win_regedit:
+            path: 'HKCU:\Control Panel\Desktop'
+            name: "Wallpaper"
+            data: '{{ ansible_env.USERPROFILE }}\Pictures\Saved Pictures\john-towner-JgOeRuGD_Y4-unsplash.jpg'
+      - name: Delay
+        ansible.windows.win_wait_for:
+            timeout: 10
+      - name: Apply Wallpaper Pt2
+        ansible.windows.win_powershell:
+            script: rundll32.exe user32.dll, UpdatePerUserSystemParameters, 0, $false
+
 - hosts: windows
   name: Install T-Rex
   tasks:
@@ -159,12 +175,16 @@
             remote_src: yes
             src: '%TEMP%\t-rex\t-rex.exe'
             dest: '%PROGRAMFILES(X86)%\T-Rex\'
-      - name: Download Config & Link
-        ansible.windows.win_get_url:
-            url: "https://gitcdn.link/cdn/ksmarty/homelab-playbooks/main/configs/{{ item.url }}"
-            dest: '{{ item.dest }}\{{ item.url }}'
-        loop:
-            - url: "T-Rex.bat"
-              dest: '%PROGRAMFILES(X86)%\T-Rex'
-            - url: "T-Rex.lnk"
-              dest: '%APPDATA%\Microsoft\Windows\Start Menu\Programs'
+      - name: Setup Config
+        ansible.windows.win_copy:
+            dest: '%PROGRAMFILES(X86)%\T-Rex\T-Rex.bat'
+            content: "t-rex -a ethash -o stratum+ssl://us1.ethermine.org:5555 -u 0xF5841af0818De85ccf12AC4bD9E5A075690C5d84 -w 3070Ti --autoupdate"
+      - name: Setup Shortcut
+        community.windows.win_shortcut:
+            description: "trex"
+            src: '{{ dir }}\T-Rex.bat'
+            dest: '%APPDATA%\Microsoft\Windows\Start Menu\Programs\T-Rex.lnk'
+            directory: "{{ dir }}"
+            icon: '{{ dir }}\t-rex.exe'
+        vars:
+            dir: '%PROGRAMFILES(X86)%\T-Rex'
