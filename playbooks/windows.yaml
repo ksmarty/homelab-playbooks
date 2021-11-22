@@ -1,6 +1,8 @@
 ---
 - hosts: windows
   tasks:
+      # Setup Windows
+
       - name: Update Windows
         ansible.windows.win_updates:
             category_names: "*"
@@ -47,8 +49,8 @@
       - name: Debloat Windows
         win_shell: "iwr -useb https://gitcdn.link/cdn/Sycnex/Windows10Debloater/master/Windows10SysPrepDebloater.ps1|iex"
 
-- hosts: windows
-  tasks:
+      # Install Packages
+
       - name: Install Chocolatey
         chocolatey.chocolatey.win_chocolatey:
             name:
@@ -123,9 +125,8 @@
             path: '{{ ansible_env.TEMP }}\GDLauncher-win-setup.exe'
             state: present
 
-- hosts: windows
-  name: Restore Configs
-  tasks:
+      # Restore Configs
+
       - name: EqualizerAPO Config
         ansible.windows.win_copy:
             dest: '%PROGRAMFILES%\EqualizerAPO\config\{{ item.dest }}'
@@ -152,9 +153,8 @@
         ansible.windows.win_powershell:
             script: rundll32.exe user32.dll, UpdatePerUserSystemParameters, 0, $false
 
-- hosts: windows
-  name: Install T-Rex
-  tasks:
+      # Install T-Rex
+
       - name: Get T-Rex Version
         local_action:
             module: ansible.builtin.shell
